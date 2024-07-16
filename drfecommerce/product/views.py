@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+
 from .models import Category, Brand, Product
 from .serializers import CategorySerializer, BrandSerializer, ProductSerializer
 
@@ -38,13 +39,17 @@ class ProductViewSet(viewsets.ViewSet):
     A simple Viewset for viewing all Products
     """
 
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().isActive()
     lookup_field = "slug"
 
     def retrieve(self, request, slug=None):
         serializer = ProductSerializer(
-            self.queryset.filter(slug=slug), many=True
+            self.queryset.filter(slug=slug).select_related(
+                "category", "brand"
+            ),
+            many=True,
         )
+
         return Response(serializer.data)
 
     @extend_schema(responses=ProductSerializer)
