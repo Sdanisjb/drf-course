@@ -3,9 +3,10 @@ import json
 
 pytestmark = pytest.mark.django_db
 
+
 class TestCategoryEndpoints:
-    
-    endpoint = '/api/category/'
+
+    endpoint = "/api/category/"
 
     def test_category_get(self, category_factory, api_client):
         # Arrange
@@ -16,9 +17,10 @@ class TestCategoryEndpoints:
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 4
 
+
 class TestBrandEndpoints:
 
-    endpoint = '/api/brand/'
+    endpoint = "/api/brand/"
 
     def test_brand_get(self, brand_factory, api_client):
         # Arrange
@@ -29,11 +31,12 @@ class TestBrandEndpoints:
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 4
 
-class TestProductEndpoints:
-    
-    endpoint = '/api/product/'
 
-    def test_product_get(self, product_factory, api_client):
+class TestProductEndpoints:
+
+    endpoint = "/api/product/"
+
+    def test_return_all_products(self, product_factory, api_client):
         # Arrange
         product_factory.create_batch(4)
         # Act
@@ -42,3 +45,17 @@ class TestProductEndpoints:
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 4
 
+    def test_return_single_product_by_slug(self, product_factory, api_client):
+        obj = product_factory(slug="test-slug")
+        response = api_client().get(f"{self.endpoint}{obj.slug}/")
+        assert response.status_code == 200
+        assert len(json.loads(response.content)) == 1
+
+    def test_return_products_by_category_name(
+        self, category_factory, product_factory, api_client
+    ):
+        obj = category_factory(slug="test-slug")
+        product_factory(category=obj)
+        response = api_client().get(f"{self.endpoint}category/{obj.slug}/")
+        assert response.status_code == 200
+        assert len(json.loads(response.content)) == 1
