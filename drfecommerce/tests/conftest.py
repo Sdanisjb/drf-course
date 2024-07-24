@@ -5,6 +5,7 @@ from .factories import (
     BrandFactory,
     ProductFactory,
     ProductLineFactory,
+    ProductImageFactory,
 )
 
 import pytest
@@ -13,6 +14,7 @@ register(CategoryFactory)
 register(BrandFactory)
 register(ProductFactory)
 register(ProductLineFactory)
+register(ProductImageFactory)
 
 
 @pytest.fixture
